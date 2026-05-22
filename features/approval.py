@@ -112,33 +112,6 @@ class ApprovalFeature:
         except ValueError:
             yield event.plain_result("❌ 次数必须是数字")
 
-
-
-    @filter.event_message_create_v2
-    async def message_listener(self, event: AstrMessageEvent):
-        """消息监听器 - 检测新成员并发送验证请求"""
-        group_id = self.utils._get_group_id(event)
-        user_id = self.utils._get_user_id(event)
-        verification = self.data_manager._get_group_data(group_id, 'verification', {})
-
-        mode = verification.get('mode', 'math')
-        if mode not in ['math', 'id']:
-            return
-
-        if user_id not in self.pending_verification.get(group_id, {}):
-            inviter = self.invitation_manager._get_inviter_of(group_id, user_id)
-            
-            if inviter and self._is_admin_or_owner(group_id, inviter):
-                user_name = getattr(event, 'user_name', f"QQ_{user_id}")
-                group_name = getattr(event, 'group_name', "本群")
-                yield event.plain_result(f"🎉 欢迎 {user_name} 加入{group_name}！（由管理员/主人邀请，免验证）")
-                welcome_msg = self._generate_welcome_message(group_id, user_name, user_id, group_name, 150)
-                if welcome_msg:
-                    yield event.plain_result(f"🎊 {welcome_msg}")
-                return
-            
-            await self._generate_new_verification(group_id, event)
-
     def _is_admin_or_owner(self, group_id: str, user_id: str) -> bool:
         """检查用户是否为管理员或主人"""
         if self.utils._is_owner_by_id(user_id):
