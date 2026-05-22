@@ -18,41 +18,31 @@ class DataManager:
     def _sync_settings_to_config(self):
         """将插件设置同步到全局配置"""
         settings_mapping = {
-            # 基础设置
             'enable_group_settings': 'enable_group_settings',
             'enable_global_settings': 'enable_global_settings',
             'owner_ids': 'owner_ids',
             'admin_roles': 'admin_roles',
-            # 审核系统
             'auto_approve': 'auto_approve',
             'approval_max_attempts': 'approval_max_attempts',
             'approval_kick_on_fail': 'approval_kick_on_fail',
-            # 黑名单系统
             'anti_spam_enabled': 'anti_spam_enabled',
             'spam_threshold': 'spam_threshold',
             'spam_time_window': 'spam_time_window',
-            # 禁言系统
             'default_mute_duration': 'default_mute_duration',
             'default_mute_reason': 'default_mute_reason',
-            # 踢出系统
             'default_kick_reason': 'default_kick_reason',
             'kick_recall_messages': 'kick_recall_messages',
             'kick_recall_count': 'kick_recall_count',
-            # 撤回功能
             'max_recall_count': 'max_recall_count',
             'allow_self_recall': 'allow_self_recall',
-            # 欢迎系统
             'welcome_enabled': 'welcome_enabled',
             'welcome_messages': 'welcome_messages',
-            # 自动回复
             'auto_reply_enabled': 'auto_reply_enabled',
             'auto_reply_cooldown': 'auto_reply_cooldown',
             'auto_reply_ignore_admin': 'auto_reply_ignore_admin',
-            # 签到系统
             'sign_enabled': 'sign_enabled',
             'sign_bonus_points': 'sign_bonus_points',
             'sign_continuous_bonus': 'sign_continuous_bonus',
-            # 其他设置
             'allow_self_reply': 'allow_self_reply',
             'auto_clean_expired': 'auto_clean_expired',
             'command_aliases': 'command_aliases',
@@ -88,45 +78,35 @@ class DataManager:
         return self._get_default_global_config()
 
     def _get_default_global_config(self) -> Dict:
-        """获取默认全局配置（插件设置）"""
+        """获取默认全局配置"""
         return {
             'version': '3.1.0',
-            # 基础设置
             'owner_ids': [],
             'enable_group_settings': False,
             'enable_global_settings': True,
             'admin_roles': ['群主', '管理员'],
-            # 审核系统
             'auto_approve': False,
             'approval_max_attempts': 3,
             'approval_kick_on_fail': False,
-            # 黑名单系统
             'anti_spam_enabled': True,
             'spam_threshold': 5,
             'spam_time_window': 60,
-            # 禁言系统
             'default_mute_duration': 30,
             'default_mute_reason': '违规发言',
-            # 踢出系统
             'default_kick_reason': '违规发言',
             'kick_recall_messages': True,
             'kick_recall_count': 10,
-            # 撤回功能
             'max_recall_count': 10,
             'allow_self_recall': False,
-            # 欢迎系统
             'welcome_enabled': True,
             'welcome_messages': [],
             'welcome_random': False,
-            # 自动回复
             'auto_reply_enabled': False,
             'auto_reply_cooldown': 5,
             'auto_reply_ignore_admin': True,
-            # 签到系统
             'sign_enabled': True,
             'sign_bonus_points': 10,
             'sign_continuous_bonus': 5,
-            # 其他设置
             'allow_self_reply': False,
             'auto_clean_expired': True,
             'custom_admins': [],
@@ -183,7 +163,7 @@ class DataManager:
         return self.global_config.get('enable_group_settings', False)
 
     def get_effective_config(self, group_id: str) -> Dict:
-        """获取群的有效配置（分群模式启用时使用群配置，否则使用全局配置）"""
+        """获取群的有效配置"""
         if not self.is_group_settings_enabled():
             return self.get_global_config()
         
@@ -347,6 +327,13 @@ class DataManager:
             logger.error(f"保存 {filename} 失败: {e}")
             return False
 
+    def _save_group_config(self, group_id: str, key: str, value: Any):
+        """保存群配置"""
+        config = self._get_group_data(group_id, 'config', {})
+        config[key] = value
+        self._set_group_data('config', config, group_id)
+        self._save_group_data('config')
+
     def _cleanup_all_expired_bans(self):
         """清理所有群的过期封禁"""
         groups_to_check = ['default'] if not self.is_group_settings_enabled() else self.groups_data.get('blacklist', {}).keys()
@@ -404,3 +391,9 @@ class DataManager:
         if len(recall_logs) > 100:
             recall_logs = recall_logs[:100]
         self._save_group_data('recall_logs')
+
+    def _schedule_cleanup(self):
+        """执行清理过期数据"""
+        if self.global_config.get('auto_clean_expired', True):
+            self._cleanup_all_expired_bans()
+            self._cleanup_all_expired_mutes()
