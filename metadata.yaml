@@ -150,7 +150,7 @@ config:
     command_aliases:
       type: object
       default: {}
-      description: 命令别名配置（{命令: [别名列表]}）
+      description: "命令别名配置，格式: 命令名:[别名列表]"
     custom_admins:
       type: array
       items:
