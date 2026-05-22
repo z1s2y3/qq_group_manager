@@ -1,0 +1,159 @@
+name: qq_group_manager
+version: 3.1.0
+description: QQ群管插件 - 提供审核、黑名单、禁言、踢出、撤回、欢迎、自动回复、签到、排行榜等功能，支持分群模式、分群管理员、数学/随机验证、主人管理
+author: AstrBot
+author_email: support@astrbot.app
+homepage: https://github.com/AstrBotDevs/AstrBot
+license: MIT
+tags:
+  - qq
+  - group
+  - management
+  - moderation
+dependencies: []
+config:
+  description: QQ群管插件配置
+  properties:
+    # ===== 基础设置 =====
+    enable_group_settings:
+      type: boolean
+      default: false
+      description: 是否启用分群配置模式
+    enable_global_settings:
+      type: boolean
+      default: true
+      description: 是否启用全局设置
+    owner_ids:
+      type: array
+      items:
+        type: string
+      default: []
+      description: 机器人主人QQ列表（不受权限限制）
+    admin_roles:
+      type: array
+      items:
+        type: string
+      default: ["群主", "管理员"]
+      description: 管理员角色列表
+
+    # ===== 审核系统 =====
+    auto_approve:
+      type: boolean
+      default: false
+      description: 是否自动审核入群申请
+    approval_max_attempts:
+      type: integer
+      default: 3
+      description: 验证失败最大尝试次数
+    approval_kick_on_fail:
+      type: boolean
+      default: false
+      description: 验证失败是否踢出
+
+    # ===== 黑名单系统 =====
+    anti_spam_enabled:
+      type: boolean
+      default: true
+      description: 是否开启反垃圾消息检测
+    spam_threshold:
+      type: integer
+      default: 5
+      description: 垃圾消息检测阈值
+    spam_time_window:
+      type: integer
+      default: 60
+      description: 垃圾消息检测时间窗口(秒)
+
+    # ===== 禁言系统 =====
+    default_mute_duration:
+      type: integer
+      default: 30
+      description: 默认禁言时长(分钟)
+    default_mute_reason:
+      type: string
+      default: 违规发言
+      description: 默认禁言理由
+
+    # ===== 踢出系统 =====
+    default_kick_reason:
+      type: string
+      default: 违规发言
+      description: 默认踢出理由
+    kick_recall_messages:
+      type: boolean
+      default: true
+      description: 踢出时是否撤回用户消息
+    kick_recall_count:
+      type: integer
+      default: 10
+      description: 踢出时撤回消息数量
+
+    # ===== 撤回功能 =====
+    max_recall_count:
+      type: integer
+      default: 10
+      description: 单次最大撤回数量
+    allow_self_recall:
+      type: boolean
+      default: false
+      description: 是否允许用户撤回自己消息
+
+    # ===== 欢迎系统 =====
+    welcome_enabled:
+      type: boolean
+      default: true
+      description: 是否开启欢迎功能
+    welcome_messages:
+      type: array
+      items:
+        type: string
+      default: []
+      description: 欢迎消息列表
+
+    # ===== 自动回复 =====
+    auto_reply_enabled:
+      type: boolean
+      default: false
+      description: 是否开启自动回复
+    auto_reply_cooldown:
+      type: integer
+      default: 5
+      description: 自动回复冷却时间(秒)
+    auto_reply_ignore_admin:
+      type: boolean
+      default: true
+      description: 自动回复是否忽略管理员消息
+
+    # ===== 签到系统 =====
+    sign_enabled:
+      type: boolean
+      default: true
+      description: 是否开启签到功能
+    sign_bonus_points:
+      type: integer
+      default: 10
+      description: 签到基础积分
+    sign_continuous_bonus:
+      type: integer
+      default: 5
+      description: 连续签到额外积分
+
+    # ===== 其他设置 =====
+    allow_self_reply:
+      type: boolean
+      default: false
+      description: 是否允许用户使用回复功能
+    auto_clean_expired:
+      type: boolean
+      default: true
+      description: 是否自动清理过期封禁/禁言
+    command_aliases:
+      type: object
+      default: {}
+      description: 命令别名配置（{命令: [别名列表]}）
+    custom_admins:
+      type: array
+      items:
+        type: string
+      default: []
+      description: 分群自定义管理员列表（仅分群配置）
