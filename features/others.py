@@ -1202,7 +1202,7 @@ QQ: {user_id}
 
 可用分类: 审核系统 | 欢迎系统 | 撤回系统 | 踢出系统 | 禁言系统 | 定时消息 | 分群设置 | 统计系统 | 黑名单系统""")
 
-    @filter.on_message
+    @filter.event_message_create_v2
     async def message_listener(self, event: AstrMessageEvent):
         """消息监听器 - 检测黑名单用户发言、自动回复、记录消息历史"""
         self._add_message_to_history(event)

@@ -114,7 +114,7 @@ class ApprovalFeature:
 
 
 
-    @filter.on_message
+    @filter.event_message_create_v2
     async def message_listener(self, event: AstrMessageEvent):
         """消息监听器 - 检测新成员并发送验证请求"""
         group_id = self.utils._get_group_id(event)
