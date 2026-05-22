@@ -309,12 +309,12 @@ class ApprovalFeature:
                     await self.context.call_api(
                         "set_group_kick",
                         group_id=int(group_id),
-                    user_id=int(user_id),
-                    reject_add_request=True
-                )
-            except Exception as e:
-                from astrbot.api import logger
-                logger.error(f"踢出用户失败: {e}")
+                        user_id=int(user_id),
+                        reject_add_request=True
+                    )
+                except Exception as e:
+                    from astrbot.api import logger
+                    logger.error(f"踢出用户失败: {e}")
         else:
             yield event.plain_result(f"❌ 验证失败次数过多，请联系管理员！")
 
